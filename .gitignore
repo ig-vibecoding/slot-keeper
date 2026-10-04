@@ -1,0 +1,26 @@
+# Secrets and environment files (templates are allowed)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Java build output
+target/
+*.class
+*.hprof
+
+# Frontend
+node_modules/
+dist/
+frontend/dist/
+frontend/node_modules/
+
+# Logs
+*.log
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store

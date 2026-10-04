@@ -1,0 +1,11 @@
+# Development overrides: Postgres is published on localhost only for psql and Testcontainers-style debugging.
+# Base compose file remains the source of truth for service definitions.
+
+services:
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: slotkeeper
+      POSTGRES_USER: ${DB_MIGRATION_USER}
+      POSTGRES_PASSWORD: ${DB_MIGRATION_PASSWORD}

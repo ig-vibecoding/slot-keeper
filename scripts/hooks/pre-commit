@@ -1,0 +1,10 @@
+# Install gitleaks and this hook into your local clone:
+#   cp scripts/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Requires gitleaks on PATH (https://github.com/gitleaks/gitleaks).
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks not found; install it before committing." >&2
+  exit 1
+fi
+
+gitleaks protect --staged --redact --config .gitleaks.toml --no-banner

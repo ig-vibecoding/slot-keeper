@@ -1,0 +1,75 @@
+name: slotkeeper
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: slotkeeper
+      POSTGRES_USER: ${DB_MIGRATION_USER}
+      POSTGRES_PASSWORD: ${DB_MIGRATION_PASSWORD}
+      # The runtime app user is created by the first migration script.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_MIGRATION_USER} -d slotkeeper"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      APP_BASE_URL: ${APP_BASE_URL}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_APP_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_APP_PASSWORD}
+      SPRING_DATASOURCE_HIKARI_USERNAME: ${DB_APP_USER}
+      SPRING_DATASOURCE_HIKARI_PASSWORD: ${DB_APP_PASSWORD}
+      SPRING_FLYWAY_USER: ${DB_MIGRATION_USER}
+      SPRING_FLYWAY_PASSWORD: ${DB_MIGRATION_PASSWORD}
+      APP_DB_MIGRATION_USER: ${DB_MIGRATION_USER}
+      APP_DB_MIGRATION_PASSWORD: ${DB_MIGRATION_PASSWORD}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PHONE_HMAC_KEY: ${PHONE_HMAC_KEY}
+      MESSAGING_PROVIDER: ${MESSAGING_PROVIDER:-console}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_FROM: ${TWILIO_FROM:-}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      test_interval: 5s
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - internal
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: link
+    depends_on:
+      - api
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  db_data:

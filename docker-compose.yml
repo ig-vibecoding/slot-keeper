@@ -24,6 +24,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -34,12 +35,8 @@ services:
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_APP_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_APP_PASSWORD}
-      SPRING_DATASOURCE_HIKARI_USERNAME: ${DB_APP_USER}
-      SPRING_DATASOURCE_HIKARI_PASSWORD: ${DB_APP_PASSWORD}
       SPRING_FLYWAY_USER: ${DB_MIGRATION_USER}
       SPRING_FLYWAY_PASSWORD: ${DB_MIGRATION_PASSWORD}
-      APP_DB_MIGRATION_USER: ${DB_MIGRATION_USER}
-      APP_DB_MIGRATION_PASSWORD: ${DB_MIGRATION_PASSWORD}
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -50,9 +47,8 @@ services:
       TWILIO_FROM: ${TWILIO_FROM:-}
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
-      test_interval: 5s
       interval: 5s
-      timeout: 3s
+      timeout:  reviewers: 3s
       retries: 10
     networks:
       - internal
@@ -61,7 +57,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    restart: link
+    restart: unless-stopped
     depends_on:
       - api
     networks:

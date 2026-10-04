@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: slotkeeper
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  flyway:
+    user: ${SPRING_FLYWAY_USER:}
+    password: ${SPRING_FLYWAY_PASSWORD:}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/slotkeeper}
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/slotkeeper}
+    username: ${DB_APP_USER:}
+    password: ${DB_APP_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  jackson:
+    time-zone: UTC
+  session:
+    timeout: 30m
+    store-type: none
+  web:
+    resources:
+      add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  server:
+    error:
+      include-message: never
+      include-stacktrace: never
+
+app:
+  base-url: ${APP_BASE_URL:}
+  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  admin:
+    username: ${ADMIN_USERNAME:}
+    password-hash: ${ADMIN_PASSWORD_HASH:}
+  messaging:
+    provider: ${MESSAGING_PROVIDER:console}
+    twilio-account-sid: ${TWILIO_ACCOUNT_SID:}
+    twilio-auth-token: ${TWILIO_AUTH_TOKEN:}
+    twilio-from: ${TWILIO_FROM:}
+  security:
+    encryption-key: ${ENCRYPTION_KEY:}
+    phone-hmac-key: ${PHONE_HMAC_KEY:}
+  timezone: Asia/Kolkata
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-stacktrace: never
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        secure: true
+        same-site: strict
+        name: SLOTKEEPER_SESSION
+        max-age: 30m

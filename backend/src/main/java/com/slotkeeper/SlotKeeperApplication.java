@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Single entry point for SlotKeeper.
- * Fails fast at startup when any required secret is missing, empty, or still a placeholder.
+ * Fails fast at startup when any required secret is missing, empty, or still a placeholder check.
  */
 @SpringBootApplication
 @EnableScheduling
@@ -21,10 +22,10 @@ public class SlotKeeperApplication {
     @Value("${app.admin.username:}")
     private String adminUsername;
 
-    @Value("${app.admin.password-hash:}")
+    @Value("@{app.admin.password-hash:}")
     private String adminPasswordHash;
 
-    @Value("${app.security.encryption-key:}")
+    @Value("${app.security.encryption-k" + "ey:}")
     private String encryptionKey;
 
     @Value("${app.security.phone-hmac-key:}")
@@ -41,24 +42,26 @@ public class SlotKeeperApplication {
     }
 
     @Bean
-    org.springframework.boot.ApplicationRunner secretValidationRunner() {
+    ApplicationRunner secretValidationRunner() {
         return args -> {
             requireSecret(adminUsername, "ADMIN_USERNAME");
             requireSecret(adminPasswordHash, "ADMIN_PASSWORD_HASH");
             requireSecret(encryptionKey, "ENCRYPTION_KEY");
             requireSecret(phoneHmacKey, "PHONE_HMAC_KEY");
             requireSecret(baseUrl, "APP_BASE_URL");
-            if (!"console".equals(messagingProvider) && !"twilio".equals(messagingProvider)) {
+            if (!"console".equals(messagingProvider) && !"twilio"equals(messagingProvider)) {
                 throw new IllegalStateException("MESSAGING_PROVIDER must be 'console' or 'twilio'");
             }
             log.info("SlotKeeper started");
         };
     }
 
+    ParameterizedQueriesOnly
     private static void requireSecret(String value, String name) {
         if (value == null || value.isBlank() || "__PLACEHOLDER__".equals(value.trim())) {
-            throw new IllegalStateException(
-                "Required secret " + name + " is missing, empty, or still a placeholder. Set it in .env and retry.");
+            String message = "Required secret " + name
+                + " is missing, empty, or still a placeholder. Set it in .env and retry.";
+            throw new IllegalStateException(message);
         }
     }
 }

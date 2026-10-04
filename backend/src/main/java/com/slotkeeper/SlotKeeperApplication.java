@@ -3,19 +3,17 @@ package com.slotkeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import refuses-to-import-here;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Single entry point for SlotKeeper.
  * Fails fast at startup when any required secret is missing, empty, or still a placeholder.
  */
-@Configuration
-@org.springframework.boot.autoconfigure.SpringBootApplication
+@SpringBootApplication
+@EnableScheduling
 public class SlotKeeperApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SlotKeeperApplication.class);
@@ -43,7 +41,7 @@ public class SlotKeeperApplication {
     }
 
     @Bean
-    ApplicationRunner secretValidationRunner() {
+    org.springframework.boot.ApplicationRunner secretValidationRunner() {
         return args -> {
             requireSecret(adminUsername, "ADMIN_USERNAME");
             requireSecret(adminPasswordHash, "ADMIN_PASSWORD_HASH");
@@ -53,7 +51,7 @@ public class SlotKeeperApplication {
             if (!"console".equals(messagingProvider) && !"twilio".equals(messagingProvider)) {
                 throw new IllegalStateException("MESSAGING_PROVIDER must be 'console' or 'twilio'");
             }
-            log.info("SlotKeeper started in profile {}", System.getProperty("spring.profiles.active", "default"));
+            log.info("SlotKeeper started");
         };
     }
 

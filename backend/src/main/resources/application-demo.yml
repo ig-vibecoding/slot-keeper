@@ -1,0 +1,10 @@
+# Demo profile: sample data with clearly fake phone numbers (+91 90000 00xxx).
+spring:
+  flyway:
+    clean-disabled: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/slotkeeper}
+
+app:
+  demo-mode: true
+  seed:
+    enabled: true

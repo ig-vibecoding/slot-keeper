@@ -1,0 +1,15 @@
+# gitleaks configuration for SlotKeeper
+title = "SlotKeeper gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow env templates and docs with placeholders only"
+paths = [
+  '''^\.env\.example$''',
+  '''^frontend/\.env\.example$''',
+  '''^README\.md$''',
+  '''^docs/.*$''',
+  '''^\.github/.*$''',
+]

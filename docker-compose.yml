@@ -24,7 +24,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -48,7 +47,7 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 5s
-      timeout:  reviewers: 3s
+      timeout: 3s
       retries: 10
     networks:
       - internal
